@@ -4,15 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 import FileModal from "./FileModal";
 import DocumentViewer from "./DocumentViewer";
+import { getFileInfo } from "../../lib/utils/documentParser";
 
-interface FileInfo {
-  filename: string;
-  type: string;
-  icon: string;
-  url: string;
-  isImage: boolean;
-  isDocument: boolean;
-}
+// Using the shared getFileInfo function which returns the FileInfo type
 
 interface FileGridProps {
   fileUrls: string[];
@@ -38,80 +32,7 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
     setCurrentFileIndex(index);
   };
 
-  const getFileInfo = (url: string): FileInfo => {
-    const filename = url.split("/").pop() || "קובץ לא ידוע";
-    const extension = url.split(".").pop()?.toLowerCase() || "";
-
-    let type = "לא ידוע";
-    let icon = "📁";
-    let isImage = false;
-    let isDocument = false;
-
-    switch (extension) {
-      case "pdf":
-        type = "מסמך PDF";
-        icon = "📄";
-        break;
-      case "doc":
-      case "docx":
-        type = "מסמך Word";
-        icon = "📝";
-        isDocument = true;
-        break;
-      case "xls":
-      case "xlsx":
-        type = "גיליון Excel";
-        icon = "📊";
-        break;
-      case "ppt":
-      case "pptx":
-        type = "מצגת PowerPoint";
-        icon = "📊";
-        break;
-      case "txt":
-        type = "קובץ טקסט";
-        icon = "📄";
-        break;
-      case "jpg":
-      case "jpeg":
-        type = "תמונת JPEG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "png":
-        type = "תמונת PNG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "gif":
-        type = "תמונת GIF";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "svg":
-        type = "תמונת SVG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "webp":
-        type = "תמונת WebP";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "bmp":
-        type = "תמונת BMP";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "ico":
-        type = "תמונת Icon";
-        icon = "🖼️";
-        isImage = true;
-        break;
-    }
-
-    return { filename, type, icon, url, isImage, isDocument };
-  };
+  // Using the shared getFileInfo function from documentParser
 
   const handleImageError = (url: string) => {
     setImageErrors((prev) => new Set(prev).add(url));
@@ -155,7 +76,8 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
         return (
           <div
             key={index}
-            className="group relative bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200"
+            className="group relative bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            onClick={() => openModal(index)}
           >
             {/* File Preview - Bigger */}
             <div className="aspect-[4/5] relative overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center">
@@ -172,7 +94,10 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200">
                     {/* Action Buttons - Top Corners */}
                     <button
-                      onClick={() => openModal(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(index);
+                      }}
                       className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                       title="צפה"
                     >
@@ -199,6 +124,7 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                     <a
                       href={url}
                       download
+                      onClick={(e) => e.stopPropagation()}
                       className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                       title="הורד"
                     >
@@ -265,7 +191,10 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200">
                     {/* Action Buttons - Top Corners */}
                     <button
-                      onClick={() => openModal(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(index);
+                      }}
                       className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                       title="צפה"
                     >
@@ -292,6 +221,7 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                     <a
                       href={url}
                       download
+                      onClick={(e) => e.stopPropagation()}
                       className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                       title="הורד"
                     >

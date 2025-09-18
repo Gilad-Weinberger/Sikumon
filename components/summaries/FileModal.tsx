@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import DocumentViewer from "./DocumentViewer";
-
-interface FileInfo {
-  filename: string;
-  type: string;
-  icon: string;
-  url: string;
-  isImage: boolean;
-  isDocument: boolean;
-}
+import { getFileInfo } from "@/lib/utils/documentParser";
 
 interface FileModalProps {
   isOpen: boolean;
@@ -29,81 +21,6 @@ const FileModal = ({
   onNavigate,
 }: FileModalProps) => {
   const [imageError, setImageError] = useState(false);
-
-  const getFileInfo = (url: string): FileInfo => {
-    const filename = url.split("/").pop() || "קובץ לא ידוע";
-    const extension = url.split(".").pop()?.toLowerCase() || "";
-
-    let type = "לא ידוע";
-    let icon = "📁";
-    let isImage = false;
-    let isDocument = false;
-
-    switch (extension) {
-      case "pdf":
-        type = "מסמך PDF";
-        icon = "📄";
-        break;
-      case "doc":
-      case "docx":
-        type = "מסמך Word";
-        icon = "📝";
-        isDocument = true;
-        break;
-      case "xls":
-      case "xlsx":
-        type = "גיליון Excel";
-        icon = "📊";
-        break;
-      case "ppt":
-      case "pptx":
-        type = "מצגת PowerPoint";
-        icon = "📊";
-        break;
-      case "txt":
-        type = "קובץ טקסט";
-        icon = "📄";
-        break;
-      case "jpg":
-      case "jpeg":
-        type = "תמונת JPEG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "png":
-        type = "תמונת PNG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "gif":
-        type = "תמונת GIF";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "svg":
-        type = "תמונת SVG";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "webp":
-        type = "תמונת WebP";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "bmp":
-        type = "תמונת BMP";
-        icon = "🖼️";
-        isImage = true;
-        break;
-      case "ico":
-        type = "תמונת Icon";
-        icon = "🖼️";
-        isImage = true;
-        break;
-    }
-
-    return { filename, type, icon, url, isImage, isDocument };
-  };
 
   const currentFile = files[currentIndex];
   const fileInfo = currentFile ? getFileInfo(currentFile) : null;

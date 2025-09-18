@@ -2,13 +2,15 @@ import {
   getSummaryById,
   deleteSummary,
 } from "../../../lib/functions/summaryFunctions";
+import { Summary, User, SummaryWithUser } from "../../../lib/types/db-schema";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 /**
  * Handles summary deletion with confirmation
  */
 export const handleDelete = async (
-  summary: any,
-  user: any,
+  summary: SummaryWithUser | null,
+  user: User | null,
   {
     setDeleting,
     setError,
@@ -16,7 +18,7 @@ export const handleDelete = async (
   }: {
     setDeleting: (deleting: boolean) => void;
     setError: (error: string | null) => void;
-    router: any;
+    router: AppRouterInstance;
   }
 ) => {
   if (!summary || !user) return;
@@ -117,7 +119,7 @@ export const fetchSummary = async (
   }: {
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
-    setSummary: (summary: any) => void;
+    setSummary: (summary: SummaryWithUser | null) => void;
   }
 ) => {
   try {
