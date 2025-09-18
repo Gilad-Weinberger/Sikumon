@@ -186,11 +186,15 @@ const FileModal = ({
           ) : (
             /* Non-image file or error fallback */
             <div className="flex flex-col items-center justify-center p-6 sm:p-12 min-w-[300px] sm:min-w-[400px]">
-              <div className="text-6xl sm:text-8xl mb-4 sm:mb-6">{fileInfo.icon}</div>
+              <div className="text-6xl sm:text-8xl mb-4 sm:mb-6">
+                {fileInfo.icon}
+              </div>
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 text-center px-2">
                 {fileInfo.filename}
               </h3>
-              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">{fileInfo.type}</p>
+              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
+                {fileInfo.type}
+              </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-sm">
                 <a

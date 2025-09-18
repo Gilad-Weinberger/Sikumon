@@ -95,7 +95,7 @@ const SignUpForm = () => {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left text-gray-900 placeholder:text-gray-500"
             placeholder="הזן את השם המלא שלך"
             disabled={isLoading}
           />
@@ -113,17 +113,17 @@ const SignUpForm = () => {
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-gray-900"
             disabled={isLoading}
           >
             <option value="">בחר שיעור</option>
-            <option value="A">א</option>
-            <option value="B">ב</option>
-            <option value="C">ג</option>
-            <option value="D">ד</option>
-            <option value="E">ה</option>
-            <option value="F">ו</option>
-            <option value="G">ז</option>
+            <option value="A">שיעור א</option>
+            <option value="B">שיעור ב</option>
+            <option value="C">שיעור ג</option>
+            <option value="D">שיעור ד</option>
+            <option value="E">שיעור ה</option>
+            <option value="F">שיעור ו</option>
+            <option value="G">שיעור ז</option>
           </select>
         </div>
 
@@ -140,7 +140,7 @@ const SignUpForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left text-gray-900 placeholder:text-gray-500"
             placeholder="הזן את האימייל שלך"
             disabled={isLoading}
           />
@@ -159,7 +159,7 @@ const SignUpForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left text-gray-900 placeholder:text-gray-500"
             placeholder="הזן סיסמה (לפחות 6 תווים)"
             disabled={isLoading}
           />
@@ -178,7 +178,7 @@ const SignUpForm = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left text-gray-900 placeholder:text-gray-500"
             placeholder="אמת את הסיסמה שלך"
             disabled={isLoading}
           />
