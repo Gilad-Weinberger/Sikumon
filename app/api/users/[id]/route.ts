@@ -23,9 +23,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Determine what fields to select based on whether user is viewing their own profile
+    const isOwnProfile = authUser.id === id;
+    const selectFields = isOwnProfile
+      ? "*" // Full profile for own account
+      : "id, full_name, created_at"; // Basic info for other users
+
     const { data: user, error } = await supabase
       .from("users")
-      .select("*")
+      .select(selectFields)
       .eq("id", id)
       .single();
 

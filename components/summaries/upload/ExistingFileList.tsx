@@ -1,5 +1,7 @@
 "use client";
 
+import { getFileType } from "@/lib/utils/fileUtils";
+
 interface ExistingFile {
   url: string;
   name: string;
@@ -32,7 +34,9 @@ const ExistingFileList = ({
             <div className="flex items-center space-x-reverse space-x-3">
               <div>
                 <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                <p className="text-xs text-gray-500">קובץ קיים</p>
+                <p className="text-xs text-gray-500">
+                  קובץ קיים • {getFileType(file.name)}
+                </p>
               </div>
             </div>
             <button
