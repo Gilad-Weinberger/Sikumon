@@ -73,13 +73,13 @@ const DocumentViewer = ({
   // Full mode - show action buttons for non-PDF documents (Word, Excel, etc.)
   return (
     <div
-      className={`${className} flex flex-col items-center justify-center p-12 min-w-[400px]`}
+      className={`${className} flex flex-col items-center justify-center p-6 sm:p-12 min-w-[300px] sm:min-w-[400px]`}
     >
-      <div className="text-8xl mb-6">📝</div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">
+      <div className="text-6xl sm:text-8xl mb-4 sm:mb-6">📝</div>
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 text-center px-2">
         {filename}
       </h3>
-      <p className="text-gray-600 mb-8">
+      <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
         {support.isDoc
           ? "מסמך Word (.doc)"
           : support.isDocx
@@ -87,31 +87,55 @@ const DocumentViewer = ({
           : "מסמך"}
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          onClick={() => window.open(viewerUrls.microsoftOffice, "_blank")}
-          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="flex flex-col gap-3 sm:gap-4">
+        {/* First row: Two open buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <button
+            onClick={() => window.open(viewerUrls.microsoftOffice, "_blank")}
+            className="bg-green-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 justify-center flex-1"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-          <span>פתח ב-Microsoft Office</span>
-        </button>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+            <span>פתח ב-Microsoft Office</span>
+          </button>
 
+          <button
+            onClick={() => window.open(viewerUrls.googleDocs, "_blank")}
+            className="bg-red-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 justify-center flex-1"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+            <span>פתח ב-Google Docs</span>
+          </button>
+        </div>
+
+        {/* Second row: Download button */}
         <a
           href={url}
           download={filename}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
+          className="bg-blue-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 justify-center w-full"
         >
           <svg
             className="w-5 h-5"
@@ -128,26 +152,6 @@ const DocumentViewer = ({
           </svg>
           <span>הורד קובץ</span>
         </a>
-
-        <button
-          onClick={() => window.open(viewerUrls.googleDocs, "_blank")}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-          <span>פתח ב-Google Docs</span>
-        </button>
       </div>
     </div>
   );

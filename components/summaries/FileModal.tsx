@@ -35,14 +35,12 @@ const FileModal = ({
           onClose();
           break;
         case "ArrowRight":
-          if (currentIndex < files.length - 1) {
-            onNavigate(currentIndex + 1);
-          }
+          // Loop to first file if at last file, otherwise go to next
+          onNavigate(currentIndex === files.length - 1 ? 0 : currentIndex + 1);
           break;
         case "ArrowLeft":
-          if (currentIndex > 0) {
-            onNavigate(currentIndex - 1);
-          }
+          // Loop to last file if at first file, otherwise go to previous
+          onNavigate(currentIndex === 0 ? files.length - 1 : currentIndex - 1);
           break;
       }
     };
@@ -67,15 +65,15 @@ const FileModal = ({
   if (!isOpen || !fileInfo) return null;
 
   const goToPrevious = () => {
-    if (currentIndex > 0) {
-      onNavigate(currentIndex - 1);
-    }
+    // Loop to last file if at first file, otherwise go to previous
+    const newIndex = currentIndex === 0 ? files.length - 1 : currentIndex - 1;
+    onNavigate(newIndex);
   };
 
   const goToNext = () => {
-    if (currentIndex < files.length - 1) {
-      onNavigate(currentIndex + 1);
-    }
+    // Loop to first file if at last file, otherwise go to next
+    const newIndex = currentIndex === files.length - 1 ? 0 : currentIndex + 1;
+    onNavigate(newIndex);
   };
 
   return (
@@ -94,12 +92,7 @@ const FileModal = ({
             {/* Previous Arrow */}
             <button
               onClick={goToPrevious}
-              disabled={currentIndex === 0}
-              className={`absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
-                currentIndex === 0
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:scale-110"
-              }`}
+              className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 hover:scale-110 transition-all duration-200"
             >
               <svg
                 className="w-6 h-6"
@@ -119,12 +112,7 @@ const FileModal = ({
             {/* Next Arrow */}
             <button
               onClick={goToNext}
-              disabled={currentIndex === files.length - 1}
-              className={`absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
-                currentIndex === files.length - 1
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:scale-110"
-              }`}
+              className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 hover:scale-110 transition-all duration-200"
             >
               <svg
                 className="w-6 h-6"
@@ -197,22 +185,22 @@ const FileModal = ({
             </div>
           ) : (
             /* Non-image file or error fallback */
-            <div className="flex flex-col items-center justify-center p-12 min-w-[400px]">
-              <div className="text-8xl mb-6">{fileInfo.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">
+            <div className="flex flex-col items-center justify-center p-6 sm:p-12 min-w-[300px] sm:min-w-[400px]">
+              <div className="text-6xl sm:text-8xl mb-4 sm:mb-6">{fileInfo.icon}</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 text-center px-2">
                 {fileInfo.filename}
               </h3>
-              <p className="text-gray-600 mb-8">{fileInfo.type}</p>
+              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">{fileInfo.type}</p>
 
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-sm">
                 <a
                   href={currentFile}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  className="bg-blue-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -229,10 +217,10 @@ const FileModal = ({
                 <a
                   href={currentFile}
                   download={fileInfo.filename}
-                  className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2"
+                  className="bg-gray-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -252,8 +240,8 @@ const FileModal = ({
         </div>
 
         {/* File Info Bar */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg">
-          <span className="text-sm">
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-75 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg max-w-[90vw]">
+          <span className="text-xs sm:text-sm truncate block">
             {currentIndex + 1} מתוך {files.length} - {fileInfo.filename}
           </span>
         </div>
