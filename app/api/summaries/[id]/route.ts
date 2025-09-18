@@ -3,15 +3,15 @@ import { createClient } from "../../../../lib/utils/supabase/server";
 import { getDbUserById } from "../../../../lib/functions/userFunctions";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET /api/summaries/[id] - Get a specific summary by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: summary, error } = await supabase
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/summaries/[id] - Update a specific summary
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     // Check if user is authenticated
@@ -204,7 +204,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/summaries/[id] - Delete a specific summary
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     // Check if user is authenticated

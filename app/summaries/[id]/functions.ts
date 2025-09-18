@@ -2,7 +2,7 @@ import {
   getSummaryById,
   deleteSummary,
 } from "../../../lib/functions/summaryFunctions";
-import { Summary, User, SummaryWithUser } from "../../../lib/types/db-schema";
+import { User, SummaryWithUser } from "../../../lib/types/db-schema";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 /**
