@@ -87,7 +87,7 @@ const FileModal = ({
       />
 
       {/* Modal Content */}
-      <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center p-4">
+      <div className="relative max-w-[95vw] max-h-full w-full h-full flex items-center justify-center p-2 sm:p-4">
         {/* Navigation Arrows */}
         {files.length > 1 && (
           <>
@@ -95,7 +95,7 @@ const FileModal = ({
             <button
               onClick={goToPrevious}
               disabled={currentIndex === 0}
-              className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
+              className={`absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
                 currentIndex === 0
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:scale-110"
@@ -120,7 +120,7 @@ const FileModal = ({
             <button
               onClick={goToNext}
               disabled={currentIndex === files.length - 1}
-              className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
+              className={`absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 p-2 sm:p-3 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 transition-all duration-200 ${
                 currentIndex === files.length - 1
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:scale-110"
@@ -146,7 +146,7 @@ const FileModal = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 hover:scale-110 transition-all duration-200"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-2 rounded-full bg-white bg-opacity-90 text-gray-700 shadow-lg hover:bg-opacity-100 hover:scale-110 transition-all duration-200"
         >
           <svg
             className="w-6 h-6"
@@ -164,8 +164,18 @@ const FileModal = ({
         </button>
 
         {/* File Content */}
-        <div className="bg-white rounded-lg shadow-2xl max-w-6xl max-h-full overflow-hidden">
-          {fileInfo.isDocument ? (
+        <div className="bg-white rounded-lg shadow-2xl max-w-full sm:max-w-[85vw] max-h-full overflow-hidden mx-1 sm:mx-0 w-80 md:w-150">
+          {fileInfo.isPDF ? (
+            <div className="w-full h-[85vh] sm:h-[80vh] overflow-auto">
+              <DocumentViewer
+                url={currentFile}
+                filename={fileInfo.filename}
+                mode="full"
+                className="w-full h-full"
+                pdfViewerType="native"
+              />
+            </div>
+          ) : fileInfo.isDocument ? (
             <div className="w-full max-h-[85vh] overflow-auto">
               <DocumentViewer
                 url={currentFile}
@@ -179,7 +189,7 @@ const FileModal = ({
               <Image
                 src={currentFile}
                 alt={fileInfo.filename}
-                className="max-w-full max-h-[80vh] object-contain"
+                className="max-w-full max-h-[85vh] sm:max-h-[80vh] object-contain"
                 height={800}
                 width={800}
                 onError={() => setImageError(true)}
@@ -218,7 +228,7 @@ const FileModal = ({
                 </a>
                 <a
                   href={currentFile}
-                  download
+                  download={fileInfo.filename}
                   className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2"
                 >
                   <svg

@@ -4,12 +4,15 @@ import {
   getDocumentSupport,
   getOnlineViewerUrls,
 } from "../../lib/utils/documentParser";
+import PDFViewer from "./PDFViewer";
+import NativePDFViewer from "./NativePDFViewer";
 
 interface DocumentViewerProps {
   url: string;
   filename: string;
   className?: string;
   mode?: "preview" | "full"; // preview for grid, full for modal
+  pdfViewerType?: "react-pdf" | "native"; // Choose PDF viewer type
 }
 
 const DocumentViewer = ({
@@ -17,11 +20,36 @@ const DocumentViewer = ({
   filename,
   className = "",
   mode = "full",
+  pdfViewerType = "native",
 }: DocumentViewerProps) => {
   const support = getDocumentSupport(filename);
   const viewerUrls = getOnlineViewerUrls(url);
+  const isPDF = filename.toLowerCase().endsWith(".pdf");
 
-  // Preview mode - show simple document icon
+  // Handle PDF files with specialized viewers
+  if (isPDF) {
+    if (pdfViewerType === "react-pdf") {
+      return (
+        <PDFViewer
+          url={url}
+          filename={filename}
+          className={className}
+          mode={mode}
+        />
+      );
+    } else {
+      return (
+        <NativePDFViewer
+          url={url}
+          filename={filename}
+          className={className}
+          mode={mode}
+        />
+      );
+    }
+  }
+
+  // Preview mode - show simple document icon for non-PDF documents
   if (mode === "preview") {
     return (
       <div
@@ -42,7 +70,7 @@ const DocumentViewer = ({
     );
   }
 
-  // Full mode - show action buttons only
+  // Full mode - show action buttons for non-PDF documents (Word, Excel, etc.)
   return (
     <div
       className={`${className} flex flex-col items-center justify-center p-12 min-w-[400px]`}
@@ -82,8 +110,8 @@ const DocumentViewer = ({
 
         <a
           href={url}
-          download
-          className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
+          download={filename}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
         >
           <svg
             className="w-5 h-5"
@@ -100,12 +128,27 @@ const DocumentViewer = ({
           </svg>
           <span>הורד קובץ</span>
         </a>
-      </div>
 
-      <p className="text-xs text-gray-500 mt-4 text-center max-w-md">
-        לחץ על &quot;פתח ב-Microsoft Office&quot; כדי לצפות במסמך בדפדפן או הורד
-        את הקובץ לצפייה מקומית
-      </p>
+        <button
+          onClick={() => window.open(viewerUrls.googleDocs, "_blank")}
+          className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 min-w-[200px] justify-center"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+          <span>פתח ב-Google Docs</span>
+        </button>
+      </div>
     </div>
   );
 };

@@ -11,12 +11,14 @@ export const getFileInfo = (url: string) => {
   let icon = "📁";
   let isDocument = false;
   let isImage = false;
+  let isPDF = false;
 
   switch (extension) {
     case "pdf":
       type = "מסמך PDF";
       icon = "📄";
       isDocument = true;
+      isPDF = true;
       break;
     case "doc":
     case "docx":
@@ -79,7 +81,7 @@ export const getFileInfo = (url: string) => {
       break;
   }
 
-  return { filename, type, icon, isDocument, isImage, url };
+  return { filename, type, icon, isDocument, isImage, isPDF, url };
 };
 
 /**
