@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "סיכומון - מערכת אותנטיקציה מאובטחת",
+  title: "סיכומון - פלטפורמה לסיכום מסמכים",
   description:
-    "מערכת אותנטיקציה מודרנית שנבנתה עם Next.js, TypeScript ו-Supabase",
+    "פלטפורמה מתקדמת לסיכום מסמכים ושיתוף ידע. העלה מסמכים, צור סיכומים איכותיים ושתף אותם עם הקהילה",
 };
 
 export default function RootLayout({

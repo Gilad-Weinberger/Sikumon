@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../../../lib/utils/supabase/server";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET /api/users/[id] - Get a specific user by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     // Check if user is authenticated
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/users/[id] - Update a specific user
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     // Check if user is authenticated
@@ -133,7 +133,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/users/[id] - Delete a specific user
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = await createClient();
 
     // Check if user is authenticated
