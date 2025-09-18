@@ -38,7 +38,7 @@ const SummaryDetailsForm = ({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, name: e.target.value }))
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-gray-900 placeholder:text-gray-500"
             placeholder="הזן נושא תיאורי לסיכום שלך"
             disabled={disabled}
           />
@@ -61,7 +61,7 @@ const SummaryDetailsForm = ({
                 description: e.target.value,
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-right"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-right text-gray-900 placeholder:text-gray-500"
             placeholder="הוסף תיאור כדי לעזור לאחרים להבין את הסיכום שלך (אופציונלי)"
             disabled={disabled}
           />

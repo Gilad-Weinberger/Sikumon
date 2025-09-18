@@ -92,7 +92,7 @@ const SearchAndFilters = ({
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="חפש סיכומים..."
-              className="w-full pl-3 pr-10 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+              className="w-full pl-3 pr-10 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-gray-900 placeholder:text-gray-500"
             />
           </div>
           {/* Sort Options */}
@@ -139,7 +139,7 @@ const SearchAndFilters = ({
                             | "name"
                         )
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     >
                       <option value="created_at">תאריך יצירה</option>
                       <option value="updated_at">תאריך עדכון</option>
@@ -159,7 +159,7 @@ const SearchAndFilters = ({
                       onChange={(e) =>
                         onSortOrderChange(e.target.value as "asc" | "desc")
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     >
                       <option value="desc">חדש לישן</option>
                       <option value="asc">ישן לחדש</option>
