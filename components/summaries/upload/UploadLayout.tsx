@@ -56,7 +56,7 @@ const UploadLayout = ({
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end space-x-reverse space-x-4 mt-8 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-reverse gap-3 mt-8 pt-6 border-t border-gray-200">
               <button
                 type="button"
                 onClick={onCancel}
