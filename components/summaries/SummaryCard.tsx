@@ -29,7 +29,7 @@ const SummaryCard = ({ summary, showAuthor = true }: SummaryCardProps) => {
           {showAuthor && (
             <div className="flex items-center text-sm text-gray-500 mt-auto pt-4 border-t border-gray-100">
               {/* User Circle Icon */}
-              <div className="flex items-center justify-center w-6 h-6 bg-gray-300 rounded-full mr-2 flex-shrink-0">
+              <div className="flex items-center justify-center w-6 h-6 bg-gray-300 rounded-full ml-2 flex-shrink-0">
                 <svg
                   className="w-4 h-4 text-gray-600"
                   fill="currentColor"
