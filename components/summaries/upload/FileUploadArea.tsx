@@ -75,7 +75,7 @@ const FileUploadArea = ({
             className="sr-only"
             onChange={(e) => e.target.files && handleFiles(e.target.files)}
             disabled={disabled}
-            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.svg,.webp"
+            accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/jpg,image/png,image/gif,image/svg+xml,image/webp"
           />
           <p className="mt-1 text-xs text-gray-500">
             PDF, Word (DOC/DOCX) ותמונות (JPEG, PNG, GIF, SVG, WebP) עד 50MB

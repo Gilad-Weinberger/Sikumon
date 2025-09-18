@@ -94,7 +94,7 @@ const UserDetailCard = ({ user }: UserDetailCardProps) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 h-fit sticky top-6">
+    <div className="bg-white rounded-xl shadow-sm p-6 h-fit lg:fixed lg:top-20 lg:right-6 lg:w-80 lg:z-10">
       <div className="text-center mb-6">
         <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-white text-2xl font-bold">
@@ -146,20 +146,50 @@ const UserDetailCard = ({ user }: UserDetailCardProps) => {
         </div>
       </div>
 
-      <div className="mt-6 space-y-3">
+      <div className="mt-6 flex gap-3">
         <button
           onClick={() => setIsEditModalOpen(true)}
-          className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+          className="flex-1 bg-gray-100 text-gray-700 p-3 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors flex items-center justify-center"
+          title="ערוך פרופיל"
         >
-          ערוך פרופיל
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
+          </svg>
         </button>
 
         <button
           onClick={handleSignOut}
           disabled={isLoading}
-          className="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+          title={isLoading ? "מתנתק..." : "יציאה"}
         >
-          {isLoading ? "מתנתק..." : "יציאה"}
+          {isLoading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+          ) : (
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+          )}
         </button>
       </div>
 

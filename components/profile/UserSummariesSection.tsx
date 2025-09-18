@@ -9,7 +9,7 @@ interface UserSummariesSectionProps {
 
 const UserSummariesSection = ({ userId }: UserSummariesSectionProps) => {
   return (
-    <div className="relative bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white rounded-xl shadow-sm p-6">
       {/* Header with title and plus button */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900">הסיכומים שלי</h2>
