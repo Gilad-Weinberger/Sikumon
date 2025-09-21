@@ -12,13 +12,18 @@ export const getDbUserById = async (userId: string): Promise<DbUser | null> => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", // Ensure cookies are sent
     });
 
     if (!response.ok) {
       if (response.status === 404) {
         return null;
       }
-      console.error("Error fetching user:", await response.text());
+      console.error(
+        "Error fetching user:",
+        response.status,
+        await response.text()
+      );
       return null;
     }
 
@@ -26,6 +31,12 @@ export const getDbUserById = async (userId: string): Promise<DbUser | null> => {
     return data.user;
   } catch (error) {
     console.error("Error in getDbUserById:", error);
+    // If fetch fails completely, it might be a network issue
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      console.error(
+        "Network error: Failed to fetch user. This might be due to network connectivity issues or the server being unavailable."
+      );
+    }
     return null;
   }
 };
@@ -47,11 +58,16 @@ export const createOrUpdateDbUser = async (userData: {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", // Ensure cookies are sent
       body: JSON.stringify(userData),
     });
 
     if (!response.ok) {
-      console.error("Error creating/updating user:", await response.text());
+      console.error(
+        "Error creating/updating user:",
+        response.status,
+        await response.text()
+      );
       return null;
     }
 
@@ -59,6 +75,11 @@ export const createOrUpdateDbUser = async (userData: {
     return data.user;
   } catch (error) {
     console.error("Error in createOrUpdateDbUser:", error);
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      console.error(
+        "Network error: Failed to create/update user. This might be due to network connectivity issues or the server being unavailable."
+      );
+    }
     return null;
   }
 };

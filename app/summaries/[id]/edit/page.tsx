@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { SummaryWithUser } from "@/lib/types/db-schema";
@@ -33,14 +33,15 @@ interface ExistingFile {
 }
 
 interface EditSummaryPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditSummaryPage({ params }: EditSummaryPageProps) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const resolvedParams = use(params);
 
   const [summary, setSummary] = useState<SummaryWithUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,8 +62,8 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
 
   // Load existing summary data
   useEffect(() => {
-    if (params.id && user) {
-      fetchSummaryForEdit(params.id, user, {
+    if (resolvedParams.id && user) {
+      fetchSummaryForEdit(resolvedParams.id, user, {
         setLoading,
         setError,
         setSummary,
@@ -70,7 +71,7 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
         setExistingFiles,
       });
     }
-  }, [params.id, user]);
+  }, [resolvedParams.id, user]);
 
   const validateFile = useCallback((file: File): boolean => {
     return validateFileUtil(file, setError);
@@ -115,7 +116,7 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
       setUploading,
       setUploadProgress,
     });
-    
+
     router.push(`/summaries/${summary.id}`);
   };
 
