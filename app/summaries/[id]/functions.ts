@@ -35,7 +35,7 @@ export const handleDelete = async (
     const success = await deleteSummary(summary.id);
 
     if (success) {
-      router.push("/summaries");
+      router.push("/profile");
     } else {
       setError("כשלון במחיקת סיכום");
     }

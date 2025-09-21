@@ -272,7 +272,7 @@ export const useSummaryDeletion = () => {
       const success = await deleteSummaryMutation.mutateAsync(summary.id);
 
       if (success) {
-        router.push("/summaries");
+        router.push("/profile");
       } else {
         setError("כשלון במחיקת סיכום");
       }
