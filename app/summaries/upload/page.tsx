@@ -152,7 +152,6 @@ export default function UploadSummaryPage() {
       <FileSection>
         <UploadToggle
           files={files}
-          onFilesChange={setFiles}
           handleFiles={handleFiles}
           dragActive={dragActive}
           handleDrag={handleDrag}
