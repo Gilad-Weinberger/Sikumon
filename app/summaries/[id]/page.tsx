@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { SummaryWithUser } from "../../../lib/types/db-schema";
 import { useAuth } from "../../../lib/contexts/AuthContext";
-import FileGrid from "../../../components/summaries/FileGrid";
 import {
-  handleDelete as handleDeleteUtil,
-  formatDate,
-  fetchSummary,
-} from "./functions";
+  useCachedSummary,
+  useDeleteSummary,
+} from "../../../lib/hooks/useCachedSummaries";
+import FileGrid from "../../../components/summaries/FileGrid";
+import { formatDate } from "./functions";
 
 interface SummaryDetailPageProps {
   params: Promise<{
@@ -23,27 +22,34 @@ export default function SummaryDetailPage({ params }: SummaryDetailPageProps) {
   const router = useRouter();
   const resolvedParams = use(params);
 
-  const [summary, setSummary] = useState<SummaryWithUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  // Use cached summary hook
+  const {
+    data: summary,
+    isLoading: loading,
+    error: queryError,
+  } = useCachedSummary(resolvedParams.id);
 
-  useEffect(() => {
-    if (resolvedParams.id) {
-      fetchSummary(resolvedParams.id, {
-        setLoading,
-        setError,
-        setSummary,
-      });
-    }
-  }, [resolvedParams.id]);
+  // Use delete mutation hook
+  const deleteSummaryMutation = useDeleteSummary();
+
+  const error = queryError ? "כשלון בטעינת סיכום" : null;
+  const deleting = deleteSummaryMutation.isPending;
 
   const handleDelete = async () => {
-    await handleDeleteUtil(summary, user, {
-      setDeleting,
-      setError,
-      router,
-    });
+    if (!summary || !user) return;
+
+    const confirmed = window.confirm(
+      "האם אתה בטוח שברצונך למחוק את הסיכום הזה? פעולה זו לא ניתנת לביטול."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteSummaryMutation.mutateAsync(summary.id);
+      router.push("/summaries");
+    } catch (err) {
+      console.error("Error deleting summary:", err);
+    }
   };
 
   const isOwner = user && summary && user.id === summary.user_id;

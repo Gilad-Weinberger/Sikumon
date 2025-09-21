@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { SummaryWithUser } from "../../lib/types/db-schema";
-import { getAllSummaries } from "../../lib/functions/summaryFunctions";
+import { useCachedSummaries } from "../../lib/hooks/useCachedSummaries";
 import SearchAndFilters from "./SearchAndFilters";
 import SummaryCard from "./SummaryCard";
 import { useAuth } from "../../lib/contexts/AuthContext";
@@ -28,58 +27,53 @@ const SummariesGrid = ({
   showUserFilter = true,
 }: SummariesGridProps) => {
   const { user } = useAuth();
-  const [summaries, setSummaries] = useState<SummaryWithUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [showUserOnly, setShowUserOnly] = useState(!!userIdFilter);
   const [sortBy, setSortBy] = useState<
     "created_at" | "updated_at" | "upload_date" | "last_edited_at" | "name"
   >("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const fetchSummaries = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Memoize the query filters to prevent unnecessary re-renders
+  const queryFilters = useMemo(
+    () => ({
+      page: currentPage,
+      limit,
+      search: search || undefined,
+      user_id: userIdFilter || (showUserOnly && user ? user.id : undefined),
+      sort_by: sortBy,
+      sort_order: sortOrder,
+    }),
+    [
+      currentPage,
+      limit,
+      search,
+      userIdFilter,
+      showUserOnly,
+      user,
+      sortBy,
+      sortOrder,
+    ]
+  );
 
-      const result = await getAllSummaries({
-        page: currentPage,
-        limit,
-        search: search || undefined,
-        user_id: userIdFilter || (showUserOnly && user ? user.id : undefined),
-        sort_by: sortBy,
-        sort_order: sortOrder,
-      });
+  // Use the cached query hook
+  const {
+    data: queryResult,
+    isLoading: loading,
+    error: queryError,
+    refetch,
+  } = useCachedSummaries(queryFilters);
 
-      if (!result) {
-        throw new Error("כשלון בטעינת סיכומים");
-      }
+  // Extract data from query result
+  const summaries = queryResult?.summaries || [];
+  const totalPages = queryResult?.pagination.totalPages || 1;
+  const error = queryError ? "כשלון בטעינת סיכומים" : null;
 
-      setSummaries(result.summaries);
-      setTotalPages(result.pagination.totalPages);
-    } catch (err) {
-      console.error("Error fetching summaries:", err);
-      setError(err instanceof Error ? err.message : "כשלון בטעינת סיכומים");
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    currentPage,
-    search,
-    showUserOnly,
-    sortBy,
-    sortOrder,
-    user,
-    userIdFilter,
-    limit,
-  ]);
-
+  // Reset page when filters change
   useEffect(() => {
-    fetchSummaries();
-  }, [fetchSummaries]);
+    setCurrentPage(1);
+  }, [search, showUserOnly, sortBy, sortOrder]);
 
   const renderPaginationButton = (page: number, isActive: boolean) => (
     <button
@@ -193,7 +187,7 @@ const SummariesGrid = ({
         <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-8">
           <div className="text-red-800">{error}</div>
           <button
-            onClick={fetchSummaries}
+            onClick={() => refetch()}
             className="mt-2 text-red-600 hover:text-red-700 underline"
           >
             נסה שנית

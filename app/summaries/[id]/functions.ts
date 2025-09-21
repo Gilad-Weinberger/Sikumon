@@ -108,6 +108,7 @@ export const getFileInfo = (url: string) => {
 };
 
 /**
+ * @deprecated Use useCachedSummary hook instead for better caching
  * Fetches summary data for the detail view
  */
 export const fetchSummary = async (

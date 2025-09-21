@@ -3,7 +3,8 @@
 import { useState, useCallback, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
-import { SummaryWithUser } from "@/lib/types/db-schema";
+import { useCachedSummary } from "@/lib/hooks/useCachedSummaries";
+import { useSummaryUpdate } from "@/lib/hooks/useSummaryMutations";
 import {
   SummaryDetailsForm,
   ExistingFileList,
@@ -12,14 +13,12 @@ import {
   UploadLayout,
 } from "@/components/summaries/upload";
 import {
-  fetchSummaryForEdit,
   validateFile as validateFileUtil,
   handleFiles as handleFilesUtil,
   handleDrag as handleDragUtil,
   handleDrop as handleDropUtil,
   removeNewFile as removeNewFileUtil,
   removeExistingFile as removeExistingFileUtil,
-  handleSubmit as handleSubmitUtil,
 } from "./functions";
 
 interface FileWithPreview extends File {
@@ -47,8 +46,13 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
   const router = useRouter();
   const resolvedParams = use(params);
 
-  const [summary, setSummary] = useState<SummaryWithUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Use cached summary hook
+  const { data: summary, isLoading: loading } = useCachedSummary(
+    resolvedParams.id
+  );
+
+  // Use update mutation hook
+  const { updateSummaryWithCache } = useSummaryUpdate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -65,18 +69,23 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
-  // Load existing summary data
+  // Initialize form data when summary loads
   useEffect(() => {
-    if (resolvedParams.id && user) {
-      fetchSummaryForEdit(resolvedParams.id, user, {
-        setLoading,
-        setError,
-        setSummary,
-        setFormData,
-        setExistingFiles,
+    if (summary) {
+      setFormData({
+        name: summary.name,
+        description: summary.description || "",
       });
+
+      // Parse existing files from file URLs
+      const existingFiles = summary.file_urls.map((url, index) => ({
+        url,
+        name: `קובץ ${index + 1}`, // Generic name since we don't store original names
+      }));
+      setExistingFiles(existingFiles);
+      setError(null);
     }
-  }, [resolvedParams.id, user]);
+  }, [summary]);
 
   const validateFile = useCallback((file: File): boolean => {
     return validateFileUtil(file, setError);
@@ -118,21 +127,28 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!summary) return;
 
-    await handleSubmitUtil(e, {
-      user,
-      summary,
-      formData,
-      existingFiles,
-      newFiles,
-      newUrls,
-      setError,
-      setUploading,
-      setUploadProgress,
-    });
+    try {
+      await updateSummaryWithCache({
+        user,
+        summary,
+        formData,
+        existingFiles,
+        newFiles,
+        newUrls,
+        setError,
+        setUploading,
+        setUploadProgress,
+      });
 
-    router.push(`/summaries/${summary.id}`);
+      // Navigate back to summary detail page on success
+      router.push(`/summaries/${summary.id}`);
+    } catch (error) {
+      // Error is already handled in the mutation hook
+      console.error("Update failed:", error);
+    }
   };
 
   if (authLoading || loading) {
