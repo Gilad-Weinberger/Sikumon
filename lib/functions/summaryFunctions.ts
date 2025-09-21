@@ -29,16 +29,7 @@ export const getSummaryById = async (
     const data = await response.json();
     const summary = data.summary as SummaryWithUser;
 
-    // If the API didn't include user data, fetch it manually
-    if (!summary.user && summary.user_id) {
-      const userData = await getDbUserById(summary.user_id);
-      if (userData) {
-        summary.user = {
-          id: userData.id,
-          full_name: userData.full_name,
-        };
-      }
-    }
+    // User data should now be included via optimized API - no fallback needed
 
     return summary;
   } catch (error) {
@@ -191,22 +182,8 @@ export const getAllSummaries = async (options?: {
 
     const data = await response.json();
 
-    // Ensure user data is available for each summary
-    const summariesWithUser: SummaryWithUser[] = await Promise.all(
-      data.summaries.map(async (summary: SummaryWithUser) => {
-        // If the API didn't include user data, fetch it manually
-        if (!summary.user && summary.user_id) {
-          const userData = await getDbUserById(summary.user_id);
-          if (userData) {
-            summary.user = {
-              id: userData.id,
-              full_name: userData.full_name,
-            };
-          }
-        }
-        return summary;
-      })
-    );
+    // User data should now be included via optimized API - no additional processing needed
+    const summariesWithUser: SummaryWithUser[] = data.summaries;
 
     return {
       summaries: summariesWithUser,

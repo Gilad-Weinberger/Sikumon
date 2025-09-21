@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../../../lib/utils/supabase/server";
-import { getDbUserById } from "../../../../lib/functions/userFunctions";
 
 interface RouteParams {
   params: Promise<{
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient();
 
     const { data: summary, error } = await supabase
-      .from("summaries")
+      .from("summaries_with_users")
       .select(
         `
         id,
@@ -26,7 +25,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         upload_date,
         last_edited_at,
         created_at,
-        updated_at
+        updated_at,
+        user_full_name,
+        user_grade
       `
       )
       .eq("id", id)
@@ -46,23 +47,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Fetch user data for the summary
-    let userData = null;
-    try {
-      userData = await getDbUserById(summary.user_id);
-    } catch (err) {
-      console.warn(
-        `Failed to fetch user data for user_id: ${summary.user_id}`,
-        err
-      );
-    }
-
+    // Transform data to include user object
     const summaryWithUser = {
-      ...summary,
-      user: userData
+      id: summary.id,
+      name: summary.name,
+      description: summary.description,
+      user_id: summary.user_id,
+      file_urls: summary.file_urls,
+      upload_date: summary.upload_date,
+      last_edited_at: summary.last_edited_at,
+      created_at: summary.created_at,
+      updated_at: summary.updated_at,
+      user: summary.user_full_name
         ? {
-            id: userData.id,
-            full_name: userData.full_name,
+            id: summary.user_id,
+            full_name: summary.user_full_name,
           }
         : null,
     };
@@ -170,16 +169,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Fetch user data for the updated summary
-    let userData = null;
-    try {
-      userData = await getDbUserById(summary.user_id);
-    } catch (err) {
-      console.warn(
-        `Failed to fetch user data for user_id: ${summary.user_id}`,
-        err
-      );
-    }
+    // Fetch user data for the updated summary using direct query
+    const { data: userData } = await supabase
+      .from("users")
+      .select("id, full_name")
+      .eq("id", summary.user_id)
+      .single();
 
     const summaryWithUser = {
       ...summary,

@@ -89,7 +89,21 @@ export interface Database {
       };
     };
     Views: {
-      [_ in never]: never;
+      summaries_with_users: {
+        Row: {
+          id: string;
+          name: string;
+          description?: string | null;
+          user_id: string;
+          file_urls: string[];
+          upload_date: string;
+          last_edited_at: string;
+          created_at: string;
+          updated_at: string;
+          user_full_name?: string | null;
+          user_grade?: GradeLevel | null;
+        };
+      };
     };
     Functions: {
       [_ in never]: never;

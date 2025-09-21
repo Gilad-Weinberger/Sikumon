@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../../lib/utils/supabase/server";
-import { getDbUserById } from "../../../lib/functions/userFunctions";
 
 // GET /api/summaries - Get all summaries (with optional filtering)
 export async function GET(request: NextRequest) {
@@ -17,9 +16,9 @@ export async function GET(request: NextRequest) {
 
     const offset = (page - 1) * limit;
 
-    // Build query without user join - we'll fetch user data separately
+    // Use optimized view that includes user data via join
     let query = supabase
-      .from("summaries")
+      .from("summaries_with_users")
       .select(
         `
         id,
@@ -30,7 +29,9 @@ export async function GET(request: NextRequest) {
         upload_date,
         last_edited_at,
         created_at,
-        updated_at
+        updated_at,
+        user_full_name,
+        user_grade
       `,
         { count: "exact" }
       )
@@ -81,30 +82,24 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Fetch user data for each summary
-    const summariesWithUser = await Promise.all(
-      summaries.map(async (summary) => {
-        let userData = null;
-        try {
-          userData = await getDbUserById(summary.user_id);
-        } catch (err) {
-          console.warn(
-            `Failed to fetch user data for user_id: ${summary.user_id}`,
-            err
-          );
-        }
-
-        return {
-          ...summary,
-          user: userData
-            ? {
-                id: userData.id,
-                full_name: userData.full_name,
-              }
-            : null,
-        };
-      })
-    );
+    // Transform data to include user object - NO MORE SEPARATE API CALLS!
+    const summariesWithUser = summaries.map((summary) => ({
+      id: summary.id,
+      name: summary.name,
+      description: summary.description,
+      user_id: summary.user_id,
+      file_urls: summary.file_urls,
+      upload_date: summary.upload_date,
+      last_edited_at: summary.last_edited_at,
+      created_at: summary.created_at,
+      updated_at: summary.updated_at,
+      user: summary.user_full_name
+        ? {
+            id: summary.user_id,
+            full_name: summary.user_full_name,
+          }
+        : null,
+    }));
 
     return NextResponse.json({
       summaries: summariesWithUser,
@@ -186,16 +181,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch user data for the created summary
-    let userData = null;
-    try {
-      userData = await getDbUserById(summary.user_id);
-    } catch (err) {
-      console.warn(
-        `Failed to fetch user data for user_id: ${summary.user_id}`,
-        err
-      );
-    }
+    // Fetch user data for the created summary using direct query
+    const { data: userData } = await supabase
+      .from("users")
+      .select("id, full_name")
+      .eq("id", summary.user_id)
+      .single();
 
     const summaryWithUser = {
       ...summary,
