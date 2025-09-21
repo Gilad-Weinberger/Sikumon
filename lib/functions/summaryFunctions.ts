@@ -1,6 +1,5 @@
 import { Summary, SummaryWithUser } from "../types/db-schema";
 import { createClient } from "../utils/supabase/client";
-import { getDbUserById } from "./userFunctions";
 
 /**
  * Fetches a summary from the database by ID via API

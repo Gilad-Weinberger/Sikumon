@@ -154,7 +154,7 @@ const FileModal = ({
 
         {/* File Content */}
         <div className="bg-white rounded-lg shadow-2xl max-w-full sm:max-w-[85vw] max-h-full overflow-hidden mx-1 sm:mx-0 w-80 md:w-150">
-          {(fileInfo as any).isGoogleDocs ? (
+          {fileInfo.isGoogleDocs ? (
             <div className="w-full h-[85vh] sm:h-[80vh] overflow-hidden">
               <GoogleDocsViewer
                 url={currentFile}

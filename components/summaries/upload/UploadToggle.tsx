@@ -18,7 +18,6 @@ interface UrlItem {
 interface UploadToggleProps {
   // File upload props
   files: FileWithPreview[];
-  onFilesChange: (files: FileWithPreview[]) => void;
   handleFiles: (fileList: FileList) => void;
   dragActive: boolean;
   handleDrag: (e: React.DragEvent) => void;
@@ -39,7 +38,6 @@ type UploadMode = "files" | "urls";
 
 const UploadToggle = ({
   files,
-  onFilesChange,
   handleFiles,
   dragActive,
   handleDrag,
