@@ -224,7 +224,6 @@ export default function EditSummaryPage({ params }: EditSummaryPageProps) {
             </h3>
             <UploadToggle
               files={newFiles}
-              onFilesChange={setNewFiles}
               handleFiles={handleFiles}
               dragActive={dragActive}
               handleDrag={handleDrag}
