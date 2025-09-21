@@ -11,6 +11,11 @@ interface FileWithPreview extends File {
   preview?: string;
 }
 
+interface UrlItem {
+  url: string;
+  title: string;
+}
+
 // File validation constants
 export const ALLOWED_FILE_TYPES = [
   "application/pdf",
@@ -140,6 +145,7 @@ export const handleSubmit = async (
     user,
     formData,
     files,
+    urls,
     setError,
     setUploading,
     setUploadProgress,
@@ -148,6 +154,7 @@ export const handleSubmit = async (
     user: User | null;
     formData: { name: string; description: string };
     files: FileWithPreview[];
+    urls: UrlItem[];
     setError: (error: string | null) => void;
     setUploading: (uploading: boolean) => void;
     setUploadProgress: React.Dispatch<
@@ -168,8 +175,8 @@ export const handleSubmit = async (
     return;
   }
 
-  if (files.length === 0) {
-    setError("חובה להעלות לפחות קובץ אחד");
+  if (files.length === 0 && urls.length === 0) {
+    setError("חובה להעלות לפחות קובץ אחד או להוסיף קישור");
     return;
   }
 
@@ -177,9 +184,10 @@ export const handleSubmit = async (
   setError(null);
 
   try {
-    // Upload all files
-    const fileUrls: string[] = [];
+    // Upload all files and collect URLs
+    const allUrls: string[] = [];
 
+    // Upload files to storage
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       setUploadProgress((prev) => ({ ...prev, [file.name]: 0 }));
@@ -192,15 +200,20 @@ export const handleSubmit = async (
         );
       }
 
-      fileUrls.push(fileUrl);
+      allUrls.push(fileUrl);
       setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
     }
+
+    // Add Google Docs URLs directly
+    urls.forEach((urlItem) => {
+      allUrls.push(urlItem.url);
+    });
 
     // Create summary record
     const summary = await createSummary({
       name: formData.name.trim(),
       description: formData.description.trim() || undefined,
-      file_urls: fileUrls,
+      file_urls: allUrls,
     });
 
     if (!summary) {

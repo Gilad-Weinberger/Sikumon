@@ -4,6 +4,7 @@ import {
   uploadSummaryFile,
 } from "@/lib/functions/summaryFunctions";
 import { SummaryWithUser, User } from "@/lib/types/db-schema";
+import { getFileInfo } from "@/lib/utils/documentParser";
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -12,6 +13,11 @@ interface FileWithPreview extends File {
 interface ExistingFile {
   url: string;
   name: string;
+}
+
+interface UrlItem {
+  url: string;
+  title: string;
 }
 
 // File validation constants
@@ -76,10 +82,13 @@ export const fetchSummaryForEdit = async (
 
     // Set existing files
     if (fetchedSummary.file_urls && fetchedSummary.file_urls.length > 0) {
-      const existingFileList = fetchedSummary.file_urls.map((url) => ({
-        url,
-        name: url.split("/").pop() || "קובץ ללא שם",
-      }));
+      const existingFileList = fetchedSummary.file_urls.map((url) => {
+        const fileInfo = getFileInfo(url);
+        return {
+          url,
+          name: fileInfo.filename,
+        };
+      });
       setExistingFiles(existingFileList);
     }
   } catch (err) {
@@ -220,6 +229,7 @@ export const handleSubmit = async (
     formData,
     existingFiles,
     newFiles,
+    newUrls,
     setError,
     setUploading,
     setUploadProgress,
@@ -229,6 +239,7 @@ export const handleSubmit = async (
     formData: { name: string; description: string };
     existingFiles: ExistingFile[];
     newFiles: FileWithPreview[];
+    newUrls: UrlItem[];
     setError: (error: string | null) => void;
     setUploading: (uploading: boolean) => void;
     setUploadProgress: React.Dispatch<
@@ -248,8 +259,12 @@ export const handleSubmit = async (
     return;
   }
 
-  if (existingFiles.length === 0 && newFiles.length === 0) {
-    setError("חובה להשאיר או להוסיף לפחות קובץ אחד");
+  if (
+    existingFiles.length === 0 &&
+    newFiles.length === 0 &&
+    newUrls.length === 0
+  ) {
+    setError("חובה להשאיר או להוסיף לפחות קובץ אחד או קישור");
     return;
   }
 
@@ -274,8 +289,12 @@ export const handleSubmit = async (
       setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
     }
 
-    // Combine existing and new file URLs
-    const allFileUrls = [...existingFiles.map((f) => f.url), ...newFileUrls];
+    // Combine existing files, new uploaded files, and new URLs
+    const allFileUrls = [
+      ...existingFiles.map((f) => f.url),
+      ...newFileUrls,
+      ...newUrls.map((urlItem) => urlItem.url),
+    ];
 
     // Update summary
     const updatedSummary = await updateSummary(summary.id, {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import DocumentViewer from "./DocumentViewer";
+import GoogleDocsViewer from "./GoogleDocsViewer";
 import { getFileInfo } from "@/lib/utils/documentParser";
 
 interface FileModalProps {
@@ -153,7 +154,16 @@ const FileModal = ({
 
         {/* File Content */}
         <div className="bg-white rounded-lg shadow-2xl max-w-full sm:max-w-[85vw] max-h-full overflow-hidden mx-1 sm:mx-0 w-80 md:w-150">
-          {fileInfo.isPDF ? (
+          {(fileInfo as any).isGoogleDocs ? (
+            <div className="w-full h-[85vh] sm:h-[80vh] overflow-hidden">
+              <GoogleDocsViewer
+                url={currentFile}
+                filename={fileInfo.filename}
+                mode="full"
+                className="w-full h-full"
+              />
+            </div>
+          ) : fileInfo.isPDF ? (
             <div className="w-full h-[85vh] sm:h-[80vh] overflow-auto">
               <DocumentViewer
                 url={currentFile}

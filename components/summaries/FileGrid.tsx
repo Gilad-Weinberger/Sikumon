@@ -3,10 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import FileModal from "./FileModal";
-import DocumentViewer from "./DocumentViewer";
 import { getFileInfo } from "../../lib/utils/documentParser";
-
-// Using the shared getFileInfo function which returns the FileInfo type
 
 interface FileGridProps {
   fileUrls: string[];
@@ -18,6 +15,58 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
   const [modalOpen, setModalOpen] = useState(false);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
+
+  // Get background color based on file type
+  const getFileBackgroundColor = (fileInfo: ReturnType<typeof getFileInfo>) => {
+    if (fileInfo.isGoogleDocs) {
+      return "bg-sky-300"; // Darker blue for Google Docs
+    }
+    if (fileInfo.isPDF) {
+      return "bg-red-100"; // Red for PDF
+    }
+    if (fileInfo.isDocument) {
+      return "bg-blue-100"; // Blue for Word docs
+    }
+    if (fileInfo.isImage) {
+      return "bg-green-100"; // Green for images
+    }
+    return "bg-gray-100"; // Default gray
+  };
+
+  const getDetailsBackgroundColor = (
+    fileInfo: ReturnType<typeof getFileInfo>
+  ) => {
+    if (fileInfo.isGoogleDocs) {
+      return "bg-gradient-to-t from-sky-800 via-sky-800/80 via-sky-800/40 to-transparent"; // Darker gradient blue for Google Docs
+    }
+    if (fileInfo.isPDF) {
+      return "bg-gradient-to-t from-red-700 via-red-700/80 via-red-700/40 to-transparent"; // Darker gradient red for PDF
+    }
+    if (fileInfo.isDocument) {
+      return "bg-gradient-to-t from-blue-700 via-blue-700/80 via-blue-700/40 to-transparent"; // Darker gradient blue for Word docs
+    }
+    if (fileInfo.isImage) {
+      return "bg-gradient-to-t from-green-700 via-green-700/80 via-green-700/40 to-transparent"; // Darker gradient green for images
+    }
+    return "bg-gradient-to-t from-gray-600 via-gray-600/80 via-gray-600/40 to-transparent"; // Darker default gradient gray
+  };
+
+  // Get icon color based on file type
+  const getIconColor = (fileInfo: ReturnType<typeof getFileInfo>) => {
+    if (fileInfo.isGoogleDocs) {
+      return "text-sky-600"; // Sky blue for Google Docs
+    }
+    if (fileInfo.isPDF) {
+      return "text-red-600"; // Red for PDF
+    }
+    if (fileInfo.isDocument) {
+      return "text-blue-600"; // Blue for Word docs
+    }
+    if (fileInfo.isImage) {
+      return "text-green-600"; // Green for images
+    }
+    return "text-gray-600"; // Default gray
+  };
 
   const openModal = (index: number) => {
     setCurrentFileIndex(index);
@@ -31,8 +80,6 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
   const navigateModal = (index: number) => {
     setCurrentFileIndex(index);
   };
-
-  // Using the shared getFileInfo function from documentParser
 
   const handleImageError = (url: string) => {
     setImageErrors((prev) => new Set(prev).add(url));
@@ -73,91 +120,31 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
         const hasImageError = imageErrors.has(url);
         const isLoading = loadingImages.has(url);
 
+        // Debug logging for all files
+        console.log("File info for:", url, {
+          filename: fileInfo.filename,
+          type: fileInfo.type,
+          isGoogleDocs: fileInfo.isGoogleDocs,
+          isImage: fileInfo.isImage,
+          isDocument: fileInfo.isDocument,
+          isPDF: fileInfo.isPDF,
+          icon: fileInfo.icon,
+          backgroundColor: getFileBackgroundColor(fileInfo),
+        });
+
         return (
           <div
             key={index}
             className="group relative bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
             onClick={() => openModal(index)}
           >
-            {/* File Preview - Bigger */}
-            <div className="aspect-[4/5] relative overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center">
-              {fileInfo.isDocument ? (
-                <div className="relative w-full h-full">
-                  <DocumentViewer
-                    url={url}
-                    filename={fileInfo.filename}
-                    mode="preview"
-                    className="w-full h-full p-2"
-                  />
-
-                  {/* Hover Overlay for Documents */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200">
-                    {/* Action Buttons - Top Corners */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal(index);
-                      }}
-                      className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                      title="צפה"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    </button>
-                    <a
-                      href={url}
-                      download
-                      onClick={(e) => e.stopPropagation()}
-                      className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                      title="הורד"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </a>
-                  </div>
-
-                  {/* File Info Overlay for Documents - Show on Hover */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 p-3">
-                    <h3
-                      className="text-xs font-medium text-white truncate"
-                      title={fileInfo.filename}
-                    >
-                      {fileInfo.filename}
-                    </h3>
-                    <p className="text-xs text-gray-300 mt-0.5">
-                      {fileInfo.type}
-                    </p>
-                  </div>
-                </div>
-              ) : fileInfo.isImage && !hasImageError ? (
+            {/* File Preview - Colored Block with Centered Icon */}
+            <div
+              className={`aspect-[4/5] relative overflow-hidden rounded-lg ${getFileBackgroundColor(
+                fileInfo
+              )} flex items-center justify-center`}
+            >
+              {fileInfo.isImage && !hasImageError ? (
                 <div className="relative w-full h-full">
                   {/* Loading spinner */}
                   {isLoading && (
@@ -186,88 +173,56 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                     }}
                     priority={index < 4}
                   />
-
-                  {/* Hover Overlay with darker background */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200">
-                    {/* Action Buttons - Top Corners */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal(index);
-                      }}
-                      className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                      title="צפה"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    </button>
-                    <a
-                      href={url}
-                      download
-                      onClick={(e) => e.stopPropagation()}
-                      className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                      title="הורד"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </a>
-                  </div>
-
-                  {/* File Info Overlay - Show on Hover */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 p-3">
-                    <h3
-                      className="text-xs font-medium text-white truncate"
-                      title={fileInfo.filename}
-                    >
-                      {fileInfo.filename}
-                    </h3>
-                    <p className="text-xs text-gray-300 mt-0.5">
-                      {fileInfo.type}
-                    </p>
-                  </div>
                 </div>
               ) : (
+                /* All other file types - Centered Icon */
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-5xl mb-3">{fileInfo.icon}</div>
-                    <div className="text-xs text-gray-500 uppercase font-medium px-2">
-                      {fileInfo.type.split(" ")[1] || fileInfo.type}
-                    </div>
+                  <div className={`text-6xl ${getIconColor(fileInfo)}`}>
+                    {fileInfo.icon}
                   </div>
+                </div>
+              )}
 
-                  {/* Action Buttons for Non-Images - Top Corners */}
-                  <button
-                    onClick={() => openModal(index)}
-                    className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                    title="צפה"
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-transparent transition-all duration-200">
+                {/* Action Buttons - Top Corners */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModal(index);
+                  }}
+                  className="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                  title="צפה"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+
+                {fileInfo.isGoogleDocs ? (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                    title="פתח ב-Google Docs"
                   >
                     <svg
                       className="w-4 h-4"
@@ -279,19 +234,15 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                       />
                     </svg>
-                  </button>
+                  </a>
+                ) : (
                   <a
                     href={url}
                     download
+                    onClick={(e) => e.stopPropagation()}
                     className="absolute top-2 left-2 bg-white bg-opacity-90 text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                     title="הורד"
                   >
@@ -309,21 +260,23 @@ const FileGrid = ({ fileUrls, className = "" }: FileGridProps) => {
                       />
                     </svg>
                   </a>
+                )}
+              </div>
 
-                  {/* File Info Overlay for Non-Images - Show on Hover */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/90 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-200 p-2">
-                    <h3
-                      className="text-xs font-medium text-gray-900 truncate"
-                      title={fileInfo.filename}
-                    >
-                      {fileInfo.filename}
-                    </h3>
-                    <p className="text-xs text-gray-600 mt-0.5">
-                      {fileInfo.type}
-                    </p>
-                  </div>
-                </div>
-              )}
+              {/* File Info Overlay - Show on Hover */}
+              <div
+                className={`absolute bottom-0 left-0 right-0 ${getDetailsBackgroundColor(
+                  fileInfo
+                )} opacity-0 group-hover:opacity-100 transition-all duration-200 p-3 rounded-b-lg`}
+              >
+                <h3
+                  className="text-xs font-medium text-white truncate"
+                  title={fileInfo.filename}
+                >
+                  {fileInfo.filename}
+                </h3>
+                <p className="text-xs text-gray-200 mt-0.5">{fileInfo.type}</p>
+              </div>
             </div>
           </div>
         );

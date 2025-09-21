@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/contexts/AuthContext";
 import {
   SummaryDetailsForm,
-  FileUploadArea,
-  FileList,
   FileSection,
+  UploadToggle,
   UploadLayout,
 } from "../../../components/summaries/upload";
 import {
@@ -23,6 +22,11 @@ interface FileWithPreview extends File {
   preview?: string;
 }
 
+interface UrlItem {
+  url: string;
+  title: string;
+}
+
 export default function UploadSummaryPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -33,6 +37,7 @@ export default function UploadSummaryPage() {
   });
 
   const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [urls, setUrls] = useState<UrlItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number;
@@ -66,11 +71,21 @@ export default function UploadSummaryPage() {
     removeFileUtil(index, setFiles);
   };
 
+  const addUrl = (url: string, title: string) => {
+    setUrls((prev) => [...prev, { url, title }]);
+    setError(null);
+  };
+
+  const removeUrl = (index: number) => {
+    setUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     await handleSubmitUtil(e, {
       user,
       formData,
       files,
+      urls,
       setError,
       setUploading,
       setUploadProgress,
@@ -121,7 +136,9 @@ export default function UploadSummaryPage() {
       submitButtonColor="blue"
       isSubmitting={uploading}
       isSubmitDisabled={
-        uploading || files.length === 0 || !formData.name.trim()
+        uploading ||
+        (files.length === 0 && urls.length === 0) ||
+        !formData.name.trim()
       }
     >
       {/* Left Column - Summary Details */}
@@ -131,21 +148,21 @@ export default function UploadSummaryPage() {
         disabled={uploading}
       />
 
-      {/* Right Column - File Upload */}
+      {/* Right Column - Upload Toggle */}
       <FileSection>
-        <FileUploadArea
+        <UploadToggle
+          files={files}
+          onFilesChange={setFiles}
           handleFiles={handleFiles}
           dragActive={dragActive}
           handleDrag={handleDrag}
           handleDrop={handleDrop}
-          disabled={uploading}
-        />
-
-        <FileList
-          files={files}
-          onRemove={removeFile}
-          uploading={uploading}
+          onRemoveFile={removeFile}
           uploadProgress={uploadProgress}
+          urls={urls}
+          onAddUrl={addUrl}
+          onRemoveUrl={removeUrl}
+          disabled={uploading}
         />
       </FileSection>
     </UploadLayout>

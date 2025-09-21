@@ -1,9 +1,75 @@
 "use client";
 
 /**
+ * Check if URL is a Google Docs URL
+ */
+export const isGoogleDocsUrl = (url: string): boolean => {
+  return /^https:\/\/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/[a-zA-Z0-9-_]+/.test(
+    url
+  );
+};
+
+/**
+ * Gets Google Docs information
+ */
+export const getGoogleDocsInfo = (url: string) => {
+  if (url.includes("/document/")) {
+    return {
+      type: "Google Docs",
+      icon: "📄",
+      isGoogleDocs: true,
+      googleDocsType: "document",
+    };
+  } else if (url.includes("/spreadsheets/")) {
+    return {
+      type: "Google Sheets",
+      icon: "📊",
+      isGoogleDocs: true,
+      googleDocsType: "spreadsheet",
+    };
+  } else if (url.includes("/presentation/")) {
+    return {
+      type: "Google Slides",
+      icon: "📑",
+      isGoogleDocs: true,
+      googleDocsType: "presentation",
+    };
+  }
+  return {
+    type: "Google Docs",
+    icon: "🔗",
+    isGoogleDocs: true,
+    googleDocsType: "unknown",
+  };
+};
+
+/**
  * Gets file information including filename, type, and icon based on file extension
  */
 export const getFileInfo = (url: string) => {
+  // Check if it's a Google Docs URL first
+  if (isGoogleDocsUrl(url)) {
+    const googleInfo = getGoogleDocsInfo(url);
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split("/");
+    const docId = pathParts[pathParts.indexOf("d") + 1];
+    const filename = docId
+      ? `${googleInfo.type} - ${docId.substring(0, 8)}...`
+      : googleInfo.type;
+
+    return {
+      filename,
+      type: googleInfo.type,
+      icon: googleInfo.icon,
+      isDocument: true,
+      isImage: false,
+      isPDF: false,
+      isGoogleDocs: true,
+      googleDocsType: googleInfo.googleDocsType,
+      url,
+    };
+  }
+
   const filename = url.split("/").pop() || "קובץ לא ידוע";
   const extension = url.split(".").pop()?.toLowerCase() || "";
 
@@ -81,7 +147,16 @@ export const getFileInfo = (url: string) => {
       break;
   }
 
-  return { filename, type, icon, isDocument, isImage, isPDF, url };
+  return {
+    filename,
+    type,
+    icon,
+    isDocument,
+    isImage,
+    isPDF,
+    isGoogleDocs: false,
+    url,
+  };
 };
 
 /**
@@ -113,4 +188,28 @@ export const getOnlineViewerUrls = (documentUrl: string) => {
     googleDocs: `https://docs.google.com/gview?url=${encodedUrl}&embedded=true`,
     microsoftOffice: `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`,
   };
+};
+
+/**
+ * Convert Google Docs URL to embed format
+ * @param url - The Google Docs URL
+ * @returns Embed URL for iframe
+ */
+export const getGoogleDocsEmbedUrl = (url: string): string => {
+  if (!isGoogleDocsUrl(url)) {
+    return url;
+  }
+
+  // Convert sharing URL to embed URL
+  if (url.includes("/edit")) {
+    return url.replace("/edit", "/preview");
+  }
+
+  // If it's already an embed URL, return as is
+  if (url.includes("/preview")) {
+    return url;
+  }
+
+  // Add preview to the end if it doesn't have edit or preview
+  return url + "/preview";
 };

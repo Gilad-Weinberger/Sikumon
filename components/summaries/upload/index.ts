@@ -2,5 +2,8 @@ export { default as SummaryDetailsForm } from "./SummaryDetailsForm";
 export { default as FileUploadArea } from "./FileUploadArea";
 export { default as FileList } from "./FileList";
 export { default as ExistingFileList } from "./ExistingFileList";
+export { default as GoogleDocsUrlInput } from "./GoogleDocsUrlInput";
 export { default as UploadLayout } from "./UploadLayout";
+export { default as UploadToggle } from "./UploadToggle";
+export { default as UrlList } from "./UrlList";
 export { default as FileSection } from "./FileSection";
